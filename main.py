@@ -1,5 +1,7 @@
 from model import Generator, Discriminator
+
 import torch
+import torchvision
 
 if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -9,11 +11,17 @@ if __name__ == '__main__':
 
     ckpt = torch.load("550000.pt")
 
-    print(ckpt.keys())
-
-    generator.load_state_dict(ckpt["g_ema"])
+    generator.load_state_dict(ckpt["g_ema"], strict=False)
     generator.eval()
 
     latent = torch.randn(1, 512, device=device)
 
     sample, _ = generator([latent])
+
+    torchvision.utils.save_image(
+        sample,
+        f"output4.png",
+        nrow=1,
+        normalize=True,
+        range=(-1, 1),
+    )

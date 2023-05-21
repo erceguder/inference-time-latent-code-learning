@@ -24,13 +24,13 @@ def gramian_matrix(vgg, img, max_layers=5):
         if isinstance(module, torch.nn.Conv2d):
             i += 1
 
-            if i <= max_layers:
-                layers.append(module)
-                net = torch.nn.Sequential(*layers)
+        if i <= max_layers:
+            layers.append(module)
+            net = torch.nn.Sequential(*layers)
 
-                feature_maps.append(net(img))
-            else:
-                break
+            feature_maps.append(net(img))
+        else:
+            break
 
     # convert the feature maps to gramian matrices
     # https://en.wikipedia.org/wiki/Gram_matrix
@@ -46,7 +46,7 @@ def gramian_matrix(vgg, img, max_layers=5):
     return gramians
 
 def style_loss(vgg, real_img, fake_img):
-    real_grams = gramian_matrix(vgg, real_img)
+    real_grams = gramian_matrix(vgg, real_img.detach())
     fake_grams = gramian_matrix(vgg, fake_img)
 
     loss = 0.0

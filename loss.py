@@ -1,4 +1,16 @@
 import torch
+import torch.nn.functional as F
+
+# taken from original stylegan2 repository
+def d_logistic_loss(real_pred, fake_pred):
+    real_loss = F.softplus(-real_pred)
+    fake_loss = F.softplus(fake_pred)
+
+    return real_loss.mean() + fake_loss.mean()
+
+# taken from original stylegan2 repository
+def g_nonsaturating_loss(fake_pred):
+    return F.softplus(-fake_pred).mean()
 
 def gramian_matrix(vgg, img, max_layers=5):
     assert img.ndim == 4 and img.shape[0] == 1, "Provide one image only."

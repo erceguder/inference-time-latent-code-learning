@@ -12,25 +12,34 @@ def d_logistic_loss(real_pred, fake_pred):
 def g_nonsaturating_loss(fake_pred):
     return F.softplus(-fake_pred).mean()
 
-def gramian_matrix(vgg, img, max_layers=5):
-    assert img.ndim == 4 and img.shape[0] == 1, "Provide one image only."
-
-    feature_maps = []
+def subnetworks(vgg, max_layers=5):
+    subnetworks = []
     layers = []
     i = 0
 
     # get feature maps from layers until max_layers
     for module in vgg:
+        if i < max_layers:
+            layers.append(module)
+        else: break
+
         if isinstance(module, torch.nn.Conv2d):
             i += 1
+            subnetworks.append(torch.nn.Sequential(*layers))
 
-        if i <= max_layers:
-            layers.append(module)
-            net = torch.nn.Sequential(*layers)
+    return subnetworks
 
-            feature_maps.append(net(img))
-        else:
-            break
+def gramian_matrix(subnetworks, img, max_layers=5):
+    assert img.ndim == 4 and img.shape[0] == 1, "Provide one image only."
+
+    feature_maps = []
+
+    # img should be normalized with
+    #    mean: 0.485, 0.456, 0.406
+    #    std: 0.229, 0.224, 0.225
+
+    for net in subnetworks:
+        feature_maps.append(net(img))
 
     # convert the feature maps to gramian matrices
     # https://en.wikipedia.org/wiki/Gram_matrix
@@ -45,9 +54,12 @@ def gramian_matrix(vgg, img, max_layers=5):
 
     return gramians
 
-def style_loss(vgg, real_img, fake_img):
-    real_grams = gramian_matrix(vgg, real_img.detach())
-    fake_grams = gramian_matrix(vgg, fake_img)
+def style_loss(subnetworks, real_img, fake_img):
+    real_img = torch.unsqueeze(real_img, axis=0) if real_img.ndim==3 else real_img
+    fake_img = torch.unsqueeze(fake_img, axis=0) if fake_img.ndim==3 else fake_img
+
+    real_grams = gramian_matrix(subnetworks, real_img)
+    fake_grams = gramian_matrix(subnetworks, fake_img)
 
     loss = 0.0
 

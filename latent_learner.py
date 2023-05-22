@@ -6,9 +6,9 @@ class LatentLearner(nn.Module):
 
         self.layers = nn.Sequential(
             nn.Linear(init_size, 512),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(512, 512),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(512, 512),
         )
     def forward(self, data):

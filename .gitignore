@@ -2,9 +2,9 @@
 babies/
 
 # runtime
-*.ipynb
 .ipynb_checkpoints/
 __pycache__
 
 # checkpoints
 *.pt
+ckpts/

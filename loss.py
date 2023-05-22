@@ -12,18 +12,19 @@ def d_logistic_loss(real_pred, fake_pred):
 def g_nonsaturating_loss(fake_pred):
     return F.softplus(-fake_pred).mean()
 
+
 def subnetworks(vgg, max_layers=5):
     subnetworks = []
     layers = []
     i = 0
 
-    # get feature maps from layers until max_layers
-    for module in vgg:
+    # get feature maps from layers until max_layers of Conv2D layers
+    for layer in vgg:
         if i < max_layers:
-            layers.append(module)
+            layers.append(layer)
         else: break
 
-        if isinstance(module, torch.nn.Conv2d):
+        if isinstance(layer, torch.nn.Conv2d):
             i += 1
             subnetworks.append(torch.nn.Sequential(*layers))
 

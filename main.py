@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # optimizers
     disc_opt = torch.optim.Adam(
         discriminator.parameters(),
-        lr = 5e-4,
+        lr = 1e-5,
         betas = (0.0, 0.99)
     )
     latent_learner_opt = torch.optim.Adam(
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     x = torch.randn(10, 1024).to(device)
 
     # 150 iterations
-    for iter_ in tqdm(range(50)):        
+    for iter_ in tqdm(range(150)):            
         for imgs in loader:
             imgs = imgs.to(device)
 
@@ -81,12 +81,15 @@ if __name__ == '__main__':
             fake_scores = discriminator(samples)
             real_scores = discriminator(imgs)
 
+#            print(f"fake_scores: {fake_scores.detach().view(-1)}, real_scores: {real_scores.detach().view(-1)}")
+
             d_loss = loss.d_logistic_loss(real_scores, fake_scores)
 
             # optimization step on discriminator
+            disc_opt.zero_grad()
+
             d_loss.backward()
             disc_opt.step()
-            disc_opt.zero_grad()
 
             # second forward pass
             w = latent_learner(x[x_idx])
@@ -94,12 +97,15 @@ if __name__ == '__main__':
 
             fake_scores = discriminator(samples)
 
-            g_loss = 5 * loss.g_nonsaturating_loss(fake_scores)
+            g_loss = 50*loss.g_nonsaturating_loss(fake_scores)
 
             # optimization step on latent learner
+            latent_learner_opt.zero_grad()
+
             g_loss.backward()
             latent_learner_opt.step()
-            latent_learner_opt.zero_grad()
+
+            continue
 
             ##### Style Loss #####
             w = latent_learner(x[x_idx])
@@ -108,11 +114,15 @@ if __name__ == '__main__':
             vgg_loss = 0.0
 
             for i, img in enumerate(imgs):
-                vgg_loss += 50 * loss.style_loss(subnetworks, img, samples[i])
+                vgg_loss += loss.style_loss(subnetworks, img, samples[i])
 
-            #print(f"d_loss: {d_loss}, g_loss: {g_loss}")#, style loss: {vgg_loss}")
+            # optimization step on latent learner
+            latent_learner_opt.zero_grad()
 
             vgg_loss.backward()
+            latent_learner_opt.step()
+
+#            print(f"d_loss: {d_loss}, g_loss: {g_loss}, style loss: {vgg_loss}")
 
         if (iter_+1) % 50 == 0:
             with torch.no_grad():
@@ -122,6 +132,18 @@ if __name__ == '__main__':
                 torchvision.utils.save_image(
                     samples.detach().clamp_(-1, 1),
                     f"samples_{iter_+1}.png",
+                    nrow=1,
+                    normalize=True,
+                    range=(-1, 1),
+                )
+
+                x = torch.randn(10, 1024).to(device)
+                w = latent_learner(x)
+                samples, _ = generator([w])
+
+                torchvision.utils.save_image(
+                    samples.detach().clamp_(-1, 1),
+                    f"noise_samples_{iter_+1}.png",
                     nrow=1,
                     normalize=True,
                     range=(-1, 1),

@@ -1,0 +1,50 @@
+FEW-SHOT CROSS-DOMAIN IMAGE GENERATION VIA INFERENCE-TIME LATENT-CODE LEARNING
+
+Summary of our reproduction as a question: 
+Can a GAN trained on a single large-scale source dataset be adapted to multiple target domains containing very few examples without re-training the pre-trained source generator?
+
+Network: 
+StyleGAN2, (Tero Karras, Samuli Laine, Miika Aittala, Janne Hellsten, Jaakko Lehtinen, and Timo Aila. Analyzing and Improving the Image Quality of StyleGAN. In Proc. of CVPR, 2020b.)
+Our aim is to prepend and train a 8-layer feed forward network outputting to the already pre-trained generator of StyleGAN2 so that the generator outputs to the target distribution of the latest training.
+
+Datasets: 
+We shall start with a StyleGAN2 trained on  
+1 - Flickr Faces HQ (FFGQ) dataset (Tero Karras, Samuli Laine, and Timo Aila. A Style-Based Generator Architecture for Generative Adversarial Networks. In Proc. of CVPR, 2019.). Our target domains, which we train the feed forward network, will be (i) FFHQ-Babies, (ii) FFHQ-Sunglasses, (iii) face sketches, (iv) emoji faces from bitmoji.com, (v) portrait paintings from the artistic faces dataset.
+2 – LSUN Church as a source domain and adapt to (i) the haunted houses, (ii) Van Goh’s house paintings.
+
+Methodology:
+very few number of target examples (e.g. k=1, 2, 5, 10) are used for k-shot adaptation. But 300 from  face sketches, 2500 from FFHQ-Babies, 2700  from FFHQ-Sunglasses, and unlimited (also mentioned as 10000) target examples from emoji faces are used. All samples are 256x256.
+
+Metrics:
+    • Frechet Incpetion Distance (FID) for measuring the imilarity of the genera limages to the real ones
+        ◦ a lower FI Dscore indicates high similarity
+          however being a uni-dimensional score, FID cannot disentangle the two aspects of sample quality and diversity.
+        ◦ To alleviate, density (CoD) and Coverage scores are proposed.
+            ▪ Density is unbounded, higher means better
+            ▪ Coverage is bounded by 1, higher score is preferable.
+    • Learned Perceptual Image Patch Similarity (LPIPS) metric, which gives and idea about overfitting on the small amout of target data.
+      
+Baselines:
+	methods to be compared with our reproduced proposed method:
+- Transferring GAN (TGAN) (Wang et al., 2018)
+- Batch Statistics Adaptation (BSA) (Noguchi & Harada,2019)
+- MineGAN (Wang et al., 2020b), Freeze-D (Mo et al., 2020)
+- Non-leaking Adaptive Data Augmentation (Karras et al., 2020a; Zhao et al., 2020b) (TGAN + ADA)
+- Elastic Weight Consolidation (EWC) (Li et al., 2020)
+- Few-shot Image Generation via Cross-domain Correspondence (CDC) (Ojha et al., 2021)
+- C3: Contrastive Learning for Cross-domain Correspondence (Lee et al.,2021)
+- Relaxed Spatial Structural Alignment (Xiao et al., 2022).
+
+Results:
+
+Table 1 is the comparison of baselines versus datasets measured by FID.
+Table 2 is the comparison of baselines versus FFHQ datasets scored by CoD and Coverage.
+Table 3 is the comparison of baselines versus Amedeo’s Paintings and sketches measured by LPIPS.
+Table 4 analyses absence and presence of loss functions., measured by FID.
+Table 5 analyses thickness of the feed-forward nearual network, measured by FID.
+Table 6 analyses the effect of k=1,5,10 in k-shot adaptation task, measured by FID.
+
+Tables:
+* Tables are in the paper, https://openreview.net/pdf?id=sCYXJr3QJM8
+
+-- Version 1 --

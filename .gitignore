@@ -1,6 +1,9 @@
 # datasets
 babies/
 
+# outputs
+*.png
+
 # runtime
 .ipynb_checkpoints/
 __pycache__

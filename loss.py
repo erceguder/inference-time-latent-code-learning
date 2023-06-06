@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+import torchvision.transforms as transforms
 
 # taken from original stylegan2 repository
 def d_logistic_loss(real_pred, fake_pred):
@@ -19,6 +20,9 @@ def subnetworks(vgg, max_layers=5):
 
     # get feature maps from layers until max_layers of Conv2D layers
     for layer in vgg:
+        if isinstance(layer, torch.nn.ReLU):
+            layer = torch.nn.ReLU(inplace=False)
+
         if i < max_layers:
             layers.append(layer)
         else: break
@@ -49,7 +53,7 @@ def gramian_matrix(subnetworks, img, max_layers=5):
         R_l, C_l = map_.shape
 
         gramian = torch.matmul(map_, map_.transpose(0, 1))
-        gramian = gramian.div(2 * R_l * C_l)
+        gramian = gramian.div(R_l * C_l)
 
         gramians.append(gramian)
 
@@ -65,6 +69,7 @@ def style_loss(subnetworks, real_img, fake_img):
     loss = 0.0
 
     for real_map, fake_map in zip(real_grams, fake_grams):
-        loss += torch.sum((real_map - fake_map) ** 2)
+        #loss += torch.sum((real_map - fake_map) ** 2)
+        loss += F.mse_loss(real_map, fake_map)
 
     return loss

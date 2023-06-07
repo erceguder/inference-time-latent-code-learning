@@ -4,7 +4,7 @@ import glob
 import os
 
 class Dataset:
-    def __init__(self, path, device, transforms):
+    def __init__(self, path, transforms):
         files = glob.glob(os.path.join(path, "*.png"))
 
         self.imgs = list()
@@ -12,10 +12,11 @@ class Dataset:
         for file in files:
             self.imgs.append(transforms(Image.open(file).convert("RGB")))
 
-        self.imgs = torch.stack(self.imgs, dim=0).to(device)
+        self.imgs = torch.stack(self.imgs, dim=0)
+        self.x = torch.randn(10, 14, 1024)
 
     def __getitem__(self, idx):
-        return self.imgs[idx]
+        return self.imgs[idx], self.x[idx]
 
     def __len__(self):
         return len(self.imgs)

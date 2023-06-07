@@ -34,7 +34,8 @@ def subnetworks(vgg, max_layers=5):
     return subnetworks
 
 def gramian_matrix(subnetworks, img, max_layers=5):
-    assert img.ndim == 4 and img.shape[0] == 1, "Provide one image only."
+#    assert img.ndim == 4 and img.shape[0] == 1, "Provide one image only."
+    assert img.ndim == 3, "Provide one image only."
 
     layer_acts = [net(img) for net in subnetworks]
 
@@ -59,17 +60,15 @@ def gramian_matrix(subnetworks, img, max_layers=5):
 
     return gramians
 
-def style_loss(subnetworks, real_img, fake_img):
-    real_img = torch.unsqueeze(real_img, axis=0) if real_img.ndim==3 else real_img
-    fake_img = torch.unsqueeze(fake_img, axis=0) if fake_img.ndim==3 else fake_img
-
-    real_grams = gramian_matrix(subnetworks, real_img)
-    fake_grams = gramian_matrix(subnetworks, fake_img)
-
+def style_loss(subnetworks, real_imgs, fake_imgs):
     loss = 0.0
 
-    for real_map, fake_map in zip(real_grams, fake_grams):
-        #loss += torch.sum((real_map - fake_map) ** 2)
-        loss += F.mse_loss(real_map, fake_map)
+    for real_img, fake_img in zip(real_imgs, fake_imgs):
+        real_grams = gramian_matrix(subnetworks, real_img)
+        fake_grams = gramian_matrix(subnetworks, fake_img)
 
-    return loss
+        for real_map, fake_map in zip(real_grams, fake_grams):
+            #loss += torch.sum((real_map - fake_map) ** 2)
+            loss += F.mse_loss(real_map, fake_map)
+
+    return loss / real_imgs.shape[0]

@@ -1,11 +1,14 @@
 import torch
 from PIL import Image
 import numpy as np
+import shutil
 import os
 
 @torch.no_grad()
-def save_samples(x, generator, latent_learner, iter_):
-    os.makedirs("samples", exist_ok=True)
+def save_samples(experiment, x, generator, latent_learner, exp):
+    if experiment == 0:
+        shutil.rmtree("samples")
+        os.makedirs("samples")
 
     generator.eval()
     latent_learner.eval()
@@ -16,12 +19,12 @@ def save_samples(x, generator, latent_learner, iter_):
     imgs = tensor_to_img(samples)
 
     for i, im in enumerate(imgs):
-        im.save(f"samples/samples_{iter_}_{i}.png",)
+        im.save(f"samples/samples_{exp}_{i}.png",)
 
 def tensor_to_img(samples):
     imgs = list()
 
-    for i, sample in enumerate(samples):
+    for sample in samples:
         sample = sample.cpu().detach().clamp_(min=-1, max=1)
         sample = (sample + 1) * 127.5
         sample = np.array(sample, dtype=np.uint8)
@@ -36,12 +39,12 @@ def disable_grad(model):
     for _, param in model.named_parameters():
         param.requires_grad = False
 
-def save(generator, latent_learner, noise):
+def save(exp, generator, latent_learner, noise):
     os.makedirs("ckpts", exist_ok=True)
 
-    torch.save(noise, "ckpts/noise.pt")
-    torch.save(latent_learner.state_dict(), "ckpts/latent_learner.pt")
-    torch.save(generator.state_dict(), "ckpts/generator.pt")
+    torch.save(noise, f"ckpts/noise_{exp}.pt")
+    torch.save(latent_learner.state_dict(), f"ckpts/latent_learner_{exp}.pt")
+    torch.save(generator.state_dict(), f"ckpts/generator_{exp}.pt")
 
 # taken from https://stackoverflow.com/a/65583584
 def image_grid(imgs, rows, cols):

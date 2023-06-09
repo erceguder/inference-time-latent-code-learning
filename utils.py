@@ -1,12 +1,14 @@
 import torch
-from PIL import Image
 import numpy as np
 import shutil
 import os
+import subprocess
+from prettytable import PrettyTable
+from PIL import Image
 
 @torch.no_grad()
-def save_samples(experiment, x, generator, latent_learner, exp):
-    if experiment == 0:
+def save_samples(experiment, iter_, x, generator, latent_learner):
+    if experiment == 0 and iter_ == 0:
         shutil.rmtree("samples")
         os.makedirs("samples")
 
@@ -19,7 +21,7 @@ def save_samples(experiment, x, generator, latent_learner, exp):
     imgs = tensor_to_img(samples)
 
     for i, im in enumerate(imgs):
-        im.save(f"samples/samples_{exp}_{i}.png",)
+        im.save(f"samples/samples_{experiment}_{iter_}_{i}.png",)
 
 def tensor_to_img(samples):
     imgs = list()
@@ -53,7 +55,27 @@ def image_grid(imgs, rows, cols):
     w, h = imgs[0].size
     grid = Image.new('RGB', size=(cols*w, rows*h))
     grid_w, grid_h = grid.size
-    
+
     for i, img in enumerate(imgs):
         grid.paste(img, box=(i%cols*w, i//cols*h))
+
     return grid
+
+def metrics(samples, test_imgs, device):
+    args = ["python",  "-m", "pytorch_fid", test_imgs, samples]
+
+    if device==torch.device("cuda"):
+        args.extend(["--device", "cuda:0"])
+
+    p = subprocess.Popen(
+        args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    out = p.communicate()[0].decode("ascii")
+    fid = out.split("FID")[1]
+    fid = fid.lstrip(':').lstrip(' ').rstrip('\n')
+    fid = float(fid)
+
+    return fid

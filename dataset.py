@@ -4,9 +4,8 @@ import glob
 import os
 
 class Dataset:
-    def __init__(self, path, transforms):
-        files = glob.glob(os.path.join(path, "*.png"))
-
+    def __init__(self, path, extension, transforms):
+        files = glob.glob(os.path.join(path, f"*.{extension}"))
         self.imgs = list()
 
         for file in files:

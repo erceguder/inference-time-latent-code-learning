@@ -8,10 +8,11 @@ if __name__ == '__main__':
 
     parser.add_argument("directory", help="directory of images to be resized")
     parser.add_argument("--resolution", type=int, default=256)
+    parser.add_argument("--extension", type=str, default="png")
 
     args = parser.parse_args()
 
-    files = glob.glob(f"{args.directory}/*.png")
+    files = glob.glob(f"{args.directory}/*.{args.extension}")
 
     for file in tqdm(files):
         im = Image.open(file)

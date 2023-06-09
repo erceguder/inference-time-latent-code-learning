@@ -2,7 +2,9 @@
 data/
 
 # outputs
-*.png
+./*.png
+samples/
+genda_samples/
 
 # runtime
 .ipynb_checkpoints/

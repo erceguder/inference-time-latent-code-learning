@@ -47,4 +47,15 @@ Table 6 analyses the effect of k=1,5,10 in k-shot adaptation task, measured by F
 Tables:
 * Tables are in the paper, https://openreview.net/pdf?id=sCYXJr3QJM8
 
--- Version 1 --
+-- version 1 submission --
+
+    The main challenge for us was that the equations and algorithms described in the paper were *misleading*. To list some,
+     - The adversarial loss described in Equation 3 cannot be applied to StyleGAN2, as the discriminator output is not necessarily a probability.
+         - To resolve this conflict, we had to have a look at their [original repository](https://github.com/arnabkmondal/GenDA/).
+     - It is stated that style loss in Equation 2 is taken from the original style loss paper, and that the notations are directly the same. However,
+         - There are clearly conflicts between the paper introducing style loss, and this paper.
+         - Further, even the [original repository](https://github.com/arnabkmondal/GenDA/) of this paper does not use what is described to be used.
+
+    *We've tried to stick with the paper <ins>as much as possible</ins>. Hence, we are well-aware that there are differences between the original implementation of the paper, and ours.*
+
+-- version 2 submission --

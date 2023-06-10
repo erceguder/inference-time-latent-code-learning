@@ -29,5 +29,5 @@ The following datasets:
 
 as well as the weights of StyleGAN2 trained on FFHQ ([drive](https://drive.google.com/u/0/uc?id=1PQutd-JboOCOZqmd95XWxWrO8gGEvRcO)) can be downloaded via:
 ```
-bash download_script.sh
+bash download_data.sh
 ```

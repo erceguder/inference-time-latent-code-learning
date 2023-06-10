@@ -1,12 +1,15 @@
 #!/bin/bash
 
-export KAGGLE_USERNAME="adnanharundoan" KAGGLE_KEY="51b9a167d974acb6bf619f1bd9e92ebc"
+# @TODO: fill it with your kaggle api token
+#export KAGGLE_USERNAME="" KAGGLE_KEY=""
 
 python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1PQutd-JboOCOZqmd95XWxWrO8gGEvRcO&export=download'; output = '550000.pt'; gdown.download(url, output, quiet=True)"
 
 python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1Uu5y_y8Rjxbj2VEzvT3aBHyn4pltFgyX&export=download'; output = 'sunglasses_real_test.zip'; gdown.download(url, output, quiet=True)"
 
 python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1JmjKBq_wylJmpCQ2OWNMy211NFJhHHID'; output = 'babies_real_test.zip'; gdown.download(url, output, quiet=True)"
+
+python -c "import gdown; url = 'https://drive.google.com/uc?id=1G_tqSI6RFZ-FQS3aFPTHblfkifNFx8oo'; output = 'genda_samples.zip'; gdown.download(url, output, quiet=True)"
 
 kaggle datasets download -d mostafamozafari/bitmoji-faces &
 wget --quiet http://mmlab.ie.cuhk.edu.hk/archive/sketchdatabase/CUHK/training_88/Cropped_Images/CUHK_training_cropped_sketches.zip &
@@ -18,6 +21,7 @@ unzip -q babies_real_test.zip -d babies_test &
 unzip -q bitmoji-faces.zip -d data &
 unzip -q sunglasses_real_test.zip -d sunglasses_test &
 unzip -q CUHK_training_cropped_sketches.zip -d data &
+unzip -q genda_samples.zip &
 
 wait < <(jobs -p)
 rm -rf *.zip

@@ -3,15 +3,13 @@
 # @TODO: fill it with your kaggle api token
 #export KAGGLE_USERNAME="" KAGGLE_KEY=""
 
-python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1PQutd-JboOCOZqmd95XWxWrO8gGEvRcO&export=download'; output = '550000.pt'; gdown.download(url, output, quiet=True)"
+gdown -q 'https://drive.google.com/u/0/uc?id=1PQutd-JboOCOZqmd95XWxWrO8gGEvRcO' & #&export=download
+gdown -q 'https://drive.google.com/u/0/uc?id=1Uu5y_y8Rjxbj2VEzvT3aBHyn4pltFgyX' & #&export=download
+gdown -q 'https://drive.google.com/u/0/uc?id=1JmjKBq_wylJmpCQ2OWNMy211NFJhHHID' &
+gdown -q 'https://drive.google.com/uc?id=1G_tqSI6RFZ-FQS3aFPTHblfkifNFx8oo'     &
+gdown -q 'https://drive.google.com/u/0/uc?id=1zy68kLcYzlfMD3X2vonHH6YiwOyA1WXO' &
 
-python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1Uu5y_y8Rjxbj2VEzvT3aBHyn4pltFgyX&export=download'; output = 'sunglasses_real_test.zip'; gdown.download(url, output, quiet=True)"
-
-python -c "import gdown; url = 'https://drive.google.com/u/0/uc?id=1JmjKBq_wylJmpCQ2OWNMy211NFJhHHID'; output = 'babies_real_test.zip'; gdown.download(url, output, quiet=True)"
-
-python -c "import gdown; url = 'https://drive.google.com/uc?id=1G_tqSI6RFZ-FQS3aFPTHblfkifNFx8oo'; output = 'genda_samples.zip'; gdown.download(url, output, quiet=True)"
-
-kaggle datasets download -d mostafamozafari/bitmoji-faces &
+kaggle datasets download -q -d mostafamozafari/bitmoji-faces &
 wget --quiet http://mmlab.ie.cuhk.edu.hk/archive/sketchdatabase/CUHK/training_88/Cropped_Images/CUHK_training_cropped_sketches.zip &
 
 wait < <(jobs -p)
@@ -22,6 +20,7 @@ unzip -q bitmoji-faces.zip -d data &
 unzip -q sunglasses_real_test.zip -d sunglasses_test &
 unzip -q CUHK_training_cropped_sketches.zip -d data &
 unzip -q genda_samples.zip &
+unzip -q ckpts.zip &
 
 wait < <(jobs -p)
 rm -rf *.zip
@@ -41,7 +40,8 @@ python resize.py data/sunglasses_test &
 
 wait < <(jobs -p)
 
-for dataset in {babies,bitmoji,sketches,sunglasses}
+#for dataset in {babies,bitmoji,sketches,sunglasses}
+for dataset in {babies,sketches,sunglasses}
 do
 	mkdir -p data/$dataset
 	samples=$(ls data/"$dataset"_test/*)

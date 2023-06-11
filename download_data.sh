@@ -40,8 +40,8 @@ python resize.py data/sunglasses_test &
 
 wait < <(jobs -p)
 
-#for dataset in {babies,bitmoji,sketches,sunglasses}
-for dataset in {babies,sketches,sunglasses}
+for dataset in {babies,bitmoji,sketches,sunglasses}
+#for dataset in {babies,sketches,sunglasses}
 do
 	mkdir -p data/$dataset
 	samples=$(ls data/"$dataset"_test/*)

@@ -41,12 +41,14 @@ python resize.py data/sunglasses_test &
 wait < <(jobs -p)
 
 for dataset in {babies,bitmoji,sketches,sunglasses}
-#for dataset in {babies,sketches,sunglasses}
 do
-	mkdir -p data/$dataset
-	samples=$(ls data/"$dataset"_test/*)
-	samples=$(shuf -e $samples)
-	samples=( $samples )
-	samples=${samples[@]:0:10}
-	mv $samples data/$dataset
+	if [ -d "data/$dataset"_test/ ]
+	then
+		mkdir -p data/$dataset
+		samples=$(ls data/"$dataset"_test/*)
+		samples=$(shuf -e $samples)
+		samples=( $samples )
+		samples=${samples[@]:0:10}
+		mv $samples data/$dataset
+	fi
 done
